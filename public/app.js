@@ -1,4 +1,4 @@
-/* 우진이 톡! — 클라이언트 로직 */
+/* 우진이 톡! — 클라라트 로직 */
 'use strict';
 
 const $ = (s) => document.querySelector(s);
@@ -8,11 +8,12 @@ const PHRASES = ['안녕! 👋','보고 싶어! 🥰','잘 자 🌙','고마워!
 const EMOJIS = ['😂','😍','🥰','😊','🤗','🤔','😭','🥺','😴','🤤','👍','👏','🙏','💪','❤️','✨','🎉','🍬','🧸','🌈','🌟','🍀'];
 const STAMPS = ['❤️','👍','😂','🎉','🍬','😍','👏','🥰'];
 const PLAY = [
+  { label: '이야기 💬', kind: 'chat' },
   { label: '끝말잇기 🎮', kind: 'wordchain' },
   { label: '말장난 😆', kind: 'pun' },
   { label: '나라·국기 🌏', kind: 'country' },
   { label: '수학 문제 🔢', kind: 'math' },
-  { label: '라이언 인사 🦁', kind: 'hello' },
+  { label: '라라 인사 🦁', kind: 'hello' },
 ];
 
 const state = {
@@ -280,7 +281,7 @@ function renderMsg(m) {
   const who = document.createElement('div');
   who.className = 'who';
   who.style.color = m.color || '#43BE9A';
-  who.textContent = m.lion ? '라이언' : (mine ? '나' : (m.name || '친구'));
+  who.textContent = m.lion ? '라라' : (mine ? '나' : (m.name || '친구'));
   body.appendChild(who);
 
   const bubble = document.createElement('div');
@@ -495,9 +496,9 @@ function runDemo() {
         m1.reactions['❤️'] = { count: 2, mine: true };
         const row = el.msgs.querySelector(`[data-id="${m1.id}"] .body`);
         if (row) renderStamps(m1, row);
-        addMsg(mk('demo-lion1', '라이언', '🦁', '#E09A00', '말장난 하나! 수학책이 울 때 하는 말 → “내 문제가 많아서 그래!” 😂', n - 60000, true));
+        addMsg(mk('demo-lion1', '라라', '🦁', '#E09A00', '말장난 하나! 수학책이 울 때 하는 말 → “내 문제가 많아서 그래!” 😂', n - 60000, true));
         setTimeout(() => {
-          addMsg(mk('demo-lion2', '라이언', '🦁', '#E09A00', '오늘의 나라 🇫🇷 프랑스! 수도는 파리! 에펠탑이 유명해!', n - 30000, true));
+          addMsg(mk('demo-lion2', '라라', '🦁', '#E09A00', '오늘의 나라 🇫🇷 프랑스! 수도는 파리! 에펠탑이 유명해!', n - 30000, true));
         }, 2400);
       }, 2200);
     }, 2000);
@@ -578,7 +579,7 @@ function exportLog() {
   for (const m of state.messages) {
     const day = dayLabel(m.ts);
     if (day !== lastDay) { lines.push('── ' + day + ' ──'); lastDay = day; }
-    const who = m.lion ? '라이언' : (m.from === state.me.id ? '나' : m.name);
+    const who = m.lion ? '라라' : (m.from === state.me.id ? '나' : m.name);
     lines.push(`[${hhmm(m.ts)}] ${who}: ${m.text}`);
   }
   lines.unshift('우진이 톡! 대화 기록 🍬');
