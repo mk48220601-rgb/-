@@ -102,6 +102,191 @@ const OTHERS_WELCOME = [
   '새 친구가 또박또박 들어왔어요. 잘 부탁해요!',
 ];
 
+// ============================================================
+// 라이언 대화 봇 — 우진이가 컴퓨터(라이언)와 실시간으로 놀이 대화
+// 규칙 기반이라 외부 AI API가 필요 없고, 아이에게 안전한 문장만 써요.
+// ============================================================
+const BOT_WORDBANK = [
+  '가방','가게','가족','가수','강아지','고양이','고래','고구마','고무줄',
+  '나비','나라','나무','나이','노래','노트','노란색','눈사람',
+  '다리','다음','다람쥐','도넛','도시','도깨비','도마뱀','동물',
+  '라면','라디오','라이언','라켓','로봇','로켓','레몬',
+  '마법','마을','마늘','모자','모래','모나리자','멋쟁이',
+  '바다','바나나','바람','보물','보라색','보트','배','병아리',
+  '사자','사과','사탕','사다리','소','소방차','소나무','새','세상','수박',
+  '아이','아침','아기','아파트','아빠','우산','우주','유리','요리','요정','예쁜',
+  '자동차','자전거','자석','장난감','지구','지우개','잠자리',
+  '차','차표','초콜릿','친구','천사','축구',
+  '카드','카메라','카레','카페','코끼리','코알라','쿠키','콩나물',
+  '타조','토마토','토끼','토요일','티라노사우루스','탁구',
+  '파도','파란색','파이','파티','포도','포크','풍선','피아노','피자',
+  '하늘','하마','하나','하트','호랑이','호수','호박','해','해바라기','햄버거','한국','한강','한복',
+];
+const BOT_FLAGS = [
+  { n: '대한민국', f: '🇰🇷', c: '서울', x: '태극기에는 4가지 모양이 있어!' },
+  { n: '프랑스', f: '🇫🇷', c: '파리', x: '에펠탑이 유명해!' },
+  { n: '미국', f: '🇺🇸', c: '워싱턴 D.C.', x: '국기에 별이 50개야!' },
+  { n: '브라질', f: '🇧🇷', c: '브라질리아', x: '축구를 아주 좋아해!' },
+  { n: '호주', f: '🇦🇺', c: '캔버라', x: '캥거루가 뛰어다녀!' },
+  { n: '스위스', f: '🇨🇭', c: '베른', x: '초콜릿으로 유명해!' },
+  { n: '이집트', f: '🇪🇬', c: '카이로', x: '피라미드가 있어!' },
+  { n: '일본', f: '🇯🇵', c: '도쿄', x: '후지산이 멋져!' },
+  { n: '중국', f: '🇨🇳', c: '베이징', x: '만리장성이 있어!' },
+  { n: '영국', f: '🇬🇧', c: '런던', x: '빅벤이 유명해!' },
+];
+const botState = new Map();   // 사용자 id -> { math?, flag?, chain? }
+
+function lastChar(w) { return w[w.length - 1]; }
+function firstChar(w) { return w[0]; }
+function randPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function wordFor(startSyllable) {
+  const pool = BOT_WORDBANK.filter(w => firstChar(w) === startSyllable);
+  return pool.length ? randPick(pool) : null;
+}
+function lionSay(text) {
+  const m = {
+    id: uid(), from: 'lion', name: '라이언', avatar: '🦁', color: '#E09A00',
+    text, ts: Date.now(), lion: true, muted: false,
+  };
+  messages.push(m);
+  if (messages.length > 400) messages.shift();
+  broadcast({ t: 'msg', m });
+}
+function mathProblem() {
+  const ops = ['+', '+', '-', '×'];
+  const op = randPick(ops);
+  let a = 2 + Math.floor(Math.random() * 16);
+  let b = 2 + Math.floor(Math.random() * 14);
+  if (op === '-') { if (b > a) { const t2 = a; a = b; b = t2; } }
+  let ans;
+  if (op === '+') ans = a + b;
+  else if (op === '-') ans = a - b;
+  else ans = a * b;
+  return { q: `${a} ${op} ${b}`, ans };
+}
+function botMenu(p) {
+  lionSay(`${p.name}아! 라이언이랑 뭐 하고 놀까? 🦁\n① 끝말잇기 ② 수학 문제 ③ 국기 퀴즈 ④ 말장난 ⑤ 나라 상식\n그냥 “끝말잇기!”라고 말하면 바로 시작해!`);
+}
+function maybeBot(ws, p, rawText) {
+  const t = rawText.replace(/\s+/g, ' ').trim();
+  if (!t) return;
+  const st = botState.get(p.id) || (botState.set(p.id, {}), botState.get(p.id));
+  const mentions = t.includes('라이언');
+  const num = t.replace(/,/g, '').trim();
+  const isNum = /^\d+$/.test(num);
+  const isCommandMsg = /끝말잇기|수학|문제|국기|퀴즈|나라|말장난|농담|안녕|심심|힘들|아파|슬퍼|졸려|고마워|사랑해|최고|놀자|뭐 하|같이/.test(t);
+  if (isCommandMsg) { st.flag = undefined; st.math = undefined; }
+
+  // 1) 끝말잇기 진행 중 (단어 심판)
+  if (st.chain) {
+    const need = st.chain.need;
+    if (firstChar(t) === need) {
+      st.chain.need = lastChar(t);
+      const reply = wordFor(lastChar(t));
+      if (reply && reply !== t) {
+        st.chain.last = reply;
+        lionSay(`또박또박 잘했어요! “${t}”! 🎉 그럼 나는 “${reply}”! 이제 ‘${lastChar(reply)}’로 시작하는 말!`);
+      } else {
+        st.chain = undefined;
+        lionSay(`오! “${t}”… 내가 이어갈 단어가 없네! 우진이 승리! 🏆 또 하려면 “끝말잇기!”라고 불러줘!`);
+      }
+    } else {
+      const hint = wordFor(need);
+      lionSay(`우진아, 지금은 ‘${need}’로 시작하는 말이야! ${hint ? `예: “${hint}”! ` : ''}다시 생각해봐 😊`);
+    }
+    return;
+  }
+  // 2) 수학 문제 대기 중 — 숫자 답 확인
+  if (st.math !== undefined) {
+    if (isNum) {
+      const n = parseInt(num, 10);
+      if (n === st.math) {
+        st.math = undefined;
+        lionSay(`정답!! ${n}! 우진이는 수학 천재! 🔢✨ 또 풀고 싶으면 “수학 문제!”라고 해!`);
+      } else {
+        lionSay(`음… ${n}? 아니야! 힌트: 정답은 ${st.math < 20 ? '20보다 작은 수야' : st.math < 40 ? '두 자리 수야' : '곱셈이라 40 근처야'}! 다시 한번! 😤`);
+      }
+      return;
+    }
+    if (!mentions && !/수학|문제|정답|몇|힌트/.test(t)) return;
+  }
+  // 3) 국기 퀴즈 대기 중 — 나라 이름을 말한 경우만 채점, 일반 대화는 조용히
+  if (st.flag) {
+    const guessed = BOT_FLAGS.find(f => t.includes(f.n));
+    if (!guessed) return;
+    if (guessed.n === st.flag) {
+      st.flag = undefined;
+      lionSay(`정답!! ${guessed.n} 맞아! ${guessed.f} ${guessed.x} 🌏✨`);
+    } else {
+      lionSay(`그건 ${guessed.n}! 지금 문제는 ${BOT_FLAGS.find(f => f.n === st.flag)?.f} ${st.flag}였어! 다시 도전! 🔄`);
+    }
+    return;
+  }
+  // 4) 계산식 감지 ("7+8=" 같은)
+  const m = t.match(/(\d+)\s*([+\-×xX*÷/])\s*(\d+)/);
+  if (m && (mentions || st.math === undefined || /수학|문제|답/.test(t))) {
+    const a = parseInt(m[1], 10), b = parseInt(m[3], 10);
+    const op = m[2];
+    let ans;
+    if (['+', '더하기', '플러스'].includes(op)) ans = a + b;
+    else if (['-', '빼기', '마이너스'].includes(op)) ans = a - b;
+    else if (['×', '*', 'x', 'X', '곱하기'].includes(op)) ans = a * b;
+    else ans = Math.floor(a / b);
+    st.math = undefined;
+    lionSay(`${a} ${op} ${b} = ${ans}! 우진이 멋져! 🎉`);
+    return;
+  }
+  // 5) 지시어 처리
+  if (/끝말잇기/.test(t)) {
+    const start = wordFor('가') || '사자';
+    st.chain = { need: lastChar(start), last: start };
+    lionSay(`끝말잇기 시작! “${start}”! 이제 ‘${lastChar(start)}’로 시작하는 말을 또박또박 써봐! 🎮`);
+    return;
+  }
+  if (/수학|문제|정답/.test(t)) {
+    const pb = mathProblem();
+    st.math = pb.ans;
+    lionSay(`우진아, ${pb.q} = ? 🤔`);
+    return;
+  }
+  if (/국기|퀴즈/.test(t)) {
+    const f = randPick(BOT_FLAGS);
+    st.flag = f.n;
+    lionSay(`이 국기(flag)는 어느 나라일까? ${f.f} 🤔`);
+    return;
+  }
+  if (/나라/.test(t)) {
+    const f = randPick(BOT_FLAGS);
+    lionSay(`오늘의 나라 ${f.f} ${f.n}! 수도는 ${f.c}야. ${f.x}`);
+    return;
+  }
+  if (/말장난|농담/.test(t)) {
+    lionSay(randPick(LION.pun));
+    return;
+  }
+  if (/안녕|하이|반가/.test(t) && t.length <= 16) {
+    lionSay(`${p.name}아, 안녕! 🦁 오늘도 반가워! ${randPick(['끝말잇기 하자?', '수학 문제 풀어볼래?', '국기 퀴즈 한 판?', '내가 말장난 하나 해줄까? 😆'])}`);
+    return;
+  }
+  if (/심심/.test(t)) {
+    const start = wordFor('가') || '사자';
+    st.chain = { need: lastChar(start), last: start };
+    lionSay(`심심해? 그럼 나랑 끝말잇기! “${start}”! 이제 ‘${lastChar(start)}’로 시작하는 말! 🎮`);
+    return;
+  }
+  if (/힘들|아파|슬퍼|졸려/.test(t)) {
+    lionSay(`${p.name}아, 괜찮아? 🧡 우진이는 최고의 친구야! 천천히 쉬어도 돼. 나는 옆에 있을게!`);
+    return;
+  }
+  if (/고마워|사랑해|최고/.test(t)) {
+    lionSay(`나도 ${p.name}이(가) 제일 좋아! 🧡🦁 너는 우리 가족의 자랑이야!`);
+    return;
+  }
+  if (/놀자|뭐 하|같이/.test(t) || mentions) {
+    botMenu(p);
+  }
+}
+
 // ---------- 유틸 ----------
 function uid() { return crypto.randomBytes(6).toString('hex'); }
 function norm(s) { return String(s).replace(/\s/g, '').toLowerCase(); }
@@ -245,6 +430,7 @@ wss.on('connection', (ws) => {
       } else {
         broadcast({ t: 'msg', m });
       }
+      maybeBot(ws, p, p.muted ? '' : text);
       return;
     }
 
@@ -279,19 +465,30 @@ wss.on('connection', (ws) => {
       return;
     }
 
-    // ----- 라이언이 한마디 (우진이 놀이) -----
+    // ----- 라이언 놀이 (대화 봇 실행기) -----
     if (obj.t === 'lion') {
       if (!rateOk(ws)) return;
-      const kind = ['pun', 'country', 'math', 'wordchain', 'hello'].includes(obj.kind) ? obj.kind : 'hello';
-      const list = LION[kind] || LION.hello;
-      const text = list[Math.floor(Math.random() * list.length)];
-      const m = {
-        id: uid(), from: 'lion', name: '라이언', avatar: '🦁', color: '#E09A00',
-        text, ts: Date.now(), lion: true, muted: false,
-      };
-      messages.push(m);
-      if (messages.length > 400) messages.shift();
-      broadcast({ t: 'msg', m });
+      const st = botState.get(p.id) || (botState.set(p.id, {}), botState.get(p.id));
+      if (obj.kind === 'wordchain' || obj.kind === 'chain') {
+        const start = wordFor('가') || '사자';
+        st.chain = { need: lastChar(start), last: start };
+        lionSay(`끝말잇기 시작! “${start}”! 이제 ‘${lastChar(start)}’로 시작하는 말을 또박또박 써봐! 🎮`);
+      } else if (obj.kind === 'math') {
+        const pb = mathProblem();
+        st.math = pb.ans;
+        lionSay(`우진아, ${pb.q} = ? 🤔`);
+      } else if (obj.kind === 'flag') {
+        const f = randPick(BOT_FLAGS);
+        st.flag = f.n;
+        lionSay(`이 국기(flag)는 어느 나라일까? ${f.f} 🤔`);
+      } else if (obj.kind === 'country') {
+        const f = randPick(BOT_FLAGS);
+        lionSay(`오늘의 나라 ${f.f} ${f.n}! 수도는 ${f.c}야. ${f.x}`);
+      } else if (obj.kind === 'pun') {
+        lionSay(randPick(LION.pun));
+      } else {
+        botMenu(p);
+      }
       return;
     }
 
@@ -345,6 +542,7 @@ wss.on('connection', (ws) => {
     const p = users.get(ws);
     if (!p) return;
     users.delete(ws);
+    botState.delete(p.id);
     lastTyping.delete(p.id);
     broadcast({ t: 'left', id: p.id });
     broadcast({ t: 'users', users: snapshot() });
