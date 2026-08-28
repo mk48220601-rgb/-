@@ -1,0 +1,16 @@
+{
+  "name": "tobaktok",
+  "version": "1.0.0",
+  "description": "또박톡 - 아이를 위한 가족 채팅 앱 (모바일 웹 + WebSocket)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "license": "MIT"
+}

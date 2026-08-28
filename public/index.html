@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF6EA">
+    <title>
+      우진이 톡!
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   우진이 톡! — 아이를 위한 가족 채팅 UI (라이언풍 리오 테마)
+   ============================================================ */
+:root {
+  --bg: #FFF8E7;
+  --bg2: #FFEFCB;
+  --card: #FFFDF7;
+  --ink: #5B4636;
+  --ink2: #A68B6F;
+  --line: #F2E0BE;
+  --lion: #F6B508;
+  --lion-deep: #E09A00;
+  --mane: #C97B1E;
+  --ownA: #FFAB40;
+  --ownB: #F57C00;
+  --own-deep: #C25E00;
+  --blue: #4FB6EC;
+  --blue-soft: #E2F3FD;
+  --mint: #43BE9A;
+  --mint-soft: #DFF5EC;
+  --lemon: #FFD46B;
+  --lemon-soft: #FFF3D6;
+  --grape: #8E7CF6;
+  --grape-soft: #EAE6FF;
+  --shadow: 0 4px 0 rgba(214, 130, 0, 0.13);
+  --r: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  background:
+    radial-gradient(60% 40% at 20% 0%, rgba(246, 181, 8, 0.22), transparent 60%),
+    radial-gradient(50% 40% at 90% 10%, rgba(201, 123, 30, 0.16), transparent 60%),
+    radial-gradient(70% 50% at 50% 110%, rgba(255, 171, 64, 0.16), transparent 65%),
+    var(--bg);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.hidden { display: none !important; }
+
+button { font-family: inherit; cursor: pointer; }
+input { font-family: inherit; }
+
+/* ── 앱 셸(폰 모양) ── */
+.shell {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+@media (min-width: 521px) {
+  body { padding: 24px 0; }
+  .shell { border-radius: 34px; border: 8px solid #fff; box-shadow: 0 24px 60px rgba(91, 70, 54, 0.28); height: calc(100vh - 48px); height: calc(100dvh - 48px); }
+}
+
+.screen { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+
+/* ═══════════ 입장 화면 ═══════════ */
+.join { overflow-y: auto; background-image: radial-gradient(rgba(224, 154, 0, 0.10) 3px, transparent 3.6px); background-size: 52px 52px; }
+
+.balloons { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.bln { position: absolute; border-radius: 50%; opacity: 0.5; animation: rise 11s linear infinite; }
+.bln::after { content: ""; position: absolute; left: 18%; top: 12%; width: 26%; height: 26%; border-radius: 50%; background: rgba(255, 255, 255, 0.6); }
+.b1 { width: 74px; height: 88px; left: 8%; bottom: -110px; background: var(--lion); animation-delay: 0s; }
+.b2 { width: 52px; height: 62px; left: 22%; bottom: -90px; background: var(--mint); animation-delay: 3.2s; }
+.b3 { width: 64px; height: 76px; left: 58%; bottom: -100px; background: var(--lemon); animation-delay: 1.6s; }
+.b4 { width: 46px; height: 56px; left: 78%; bottom: -80px; background: var(--blue); animation-delay: 5s; }
+.b5 { width: 58px; height: 70px; left: 88%; bottom: -95px; background: var(--grape); animation-delay: 7.4s; }
+.b6 { width: 84px; height: 100px; left: 42%; bottom: -120px; background: var(--bg2); animation-delay: 9.5s; }
+@keyframes rise { 0% { transform: translateY(0) rotate(-6deg); } 100% { transform: translateY(-120vh) rotate(10deg); } }
+
+.join-inner {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 22px) 26px calc(env(safe-area-inset-bottom) + 26px);
+  text-align: center;
+}
+
+.mascot-wrap { position: relative; margin-bottom: 4px; }
+.mascot { animation: bob 3s ease-in-out infinite; }
+.paw { transform-box: fill-box; transform-origin: 90% 90%; animation: wave 2.3s ease-in-out infinite; }
+@keyframes wave { 0%, 60%, 100% { transform: rotate(0deg); } 70%, 85% { transform: rotate(-26deg); } }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.mascot-name {
+  position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+  background: var(--mane); color: #FFF3D6;
+  font-family: "Jua", sans-serif; font-size: 14px;
+  padding: 2px 12px; border-radius: 999px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.logo {
+  font-family: "Jua", sans-serif;
+  font-size: 52px;
+  letter-spacing: 2px;
+  color: var(--lion-deep);
+  text-shadow: 0 3px 0 #fff, 0 6px 0 rgba(201, 123, 30, 0.2);
+  margin-top: 16px;
+}
+.tag { margin-top: 4px; color: var(--ink2); font-size: 16px; }
+
+.field-label { margin-top: 24px; font-family: "Jua", sans-serif; font-size: 15px; color: var(--ink); opacity: 0.9; }
+
+.name-input {
+  margin-top: 10px;
+  width: min(320px, 100%);
+  border: 3px solid rgba(224, 154, 0, 0.4);
+  border-radius: 999px;
+  background: var(--card);
+  padding: 13px 20px;
+  font-size: 18px;
+  text-align: center;
+  color: var(--ink);
+  outline: none;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s;
+}
+.name-input:focus { border-color: var(--lion-deep); }
+.name-input.shake { animation: shake 0.4s; border-color: var(--own-deep); }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+.avatars {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  width: min(340px, 100%);
+}
+.avatar-btn {
+  aspect-ratio: 1;
+  border: 3px solid transparent;
+  border-radius: 16px;
+  background: var(--card);
+  font-size: 26px;
+  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 0 rgba(91, 70, 54, 0.08);
+  transition: transform 0.12s, border-color 0.12s, background 0.12s;
+}
+.avatar-btn:hover { transform: translateY(-2px); }
+.avatar-btn.on { border-color: var(--lion-deep); background: var(--lemon-soft); transform: scale(1.08); }
+
+.enter-btn {
+  margin-top: 26px;
+  width: min(320px, 100%);
+  padding: 16px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--ownA), var(--ownB));
+  color: #fff;
+  font-family: "Jua", sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 0 #B05A00, 0 10px 18px rgba(245, 124, 0, 0.32);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.enter-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #B05A00; }
+
+.room-note { margin-top: 24px; color: var(--ink2); font-size: 13px; line-height: 1.7; }
+
+/* ═══════════ 채팅 화면 ═══════════ */
+.chat { display: flex; flex-direction: column; background: var(--bg); }
+
+.chat-head {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: calc(env(safe-area-inset-top) + 12px) 14px 10px;
+  background: var(--card);
+  border-bottom: 3px dashed var(--line);
+}
+.room h2 { font-family: "Jua", sans-serif; font-size: 19px; color: var(--ink); }
+.presence { display: flex; align-items: center; gap: 5px; margin-top: 3px; min-height: 22px; flex-wrap: wrap; }
+.presence .p-av { font-size: 16px; width: 22px; height: 22px; background: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.presence .p-num { font-size: 12px; color: var(--ink2); }
+.presence .p-num.muted-note { color: var(--own-deep); }
+
+.head-ctrl { display: flex; gap: 6px; align-items: center; flex: 0 0 auto; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 13px;
+  border: 2px solid var(--line); background: var(--bg);
+  font-size: 17px; transition: transform 0.1s;
+}
+.icon-btn:active { transform: scale(0.9); }
+.icon-btn.off { opacity: 0.45; }
+.parent-btn {
+  padding: 8px 12px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--card);
+  font-family: "Jua", sans-serif; font-size: 14px; color: var(--ink);
+}
+
+.msgs {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 14px 8px;
+  scroll-behavior: smooth;
+}
+.msgs::-webkit-scrollbar { display: none; }
+
+.day-divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 6px 0 12px; color: var(--ink2); font-size: 12px;
+}
+.day-divider::before, .day-divider::after { content: ""; flex: 1; height: 2px; background: var(--line); border-radius: 2px; }
+.day-divider .day-chip { background: var(--card); border: 2px solid var(--line); border-radius: 999px; padding: 2px 12px; white-space: nowrap; }
+
+.msg {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: flex-end;
+  animation: pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes pop { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+.msg .avatar {
+  flex: 0 0 auto;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card);
+  border-radius: 15px;
+  font-size: 23px;
+  box-shadow: 0 2px 0 rgba(91, 70, 54, 0.08);
+}
+.msg.mine { flex-direction: row-reverse; }
+
+.msg .body { display: flex; flex-direction: column; max-width: 74%; }
+.msg .who { font-family: "Jua", sans-serif; font-size: 13px; margin: 0 4px 2px; }
+.msg.mine .body { align-items: flex-end; }
+
+/* 필로우 말풍선 — 색 테이프가 붙은 접힌 쪽지 */
+.bubble {
+  position: relative;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-bottom-width: 5px;
+  border-bottom-color: var(--c, var(--mint));
+  border-radius: 18px 18px 18px 5px;
+  padding: 9px 14px;
+  font-size: 16.5px;
+  line-height: 1.45;
+  word-break: break-word;
+  white-space: pre-wrap;
+  box-shadow: 0 2px 0 rgba(91, 70, 54, 0.06);
+}
+.bubble::before {
+  content: "";
+  position: absolute;
+  top: -2px; left: 12px;
+  width: 36px; height: 6px;
+  background: var(--c, var(--mint));
+  border-radius: 0 0 6px 6px;
+  opacity: 0.85;
+}
+.msg.mine .bubble {
+  background: linear-gradient(135deg, var(--ownA), var(--ownB));
+  border: none;
+  border-bottom: 5px solid var(--own-deep);
+  border-radius: 18px 18px 5px 18px;
+  color: #fff;
+}
+.msg.mine .bubble::before { left: auto; right: 12px; background: rgba(255, 255, 255, 0.5); }
+
+/* 라이언(리오)의 한마디 말풍선 */
+.msg.lion .avatar { background: var(--lemon-soft); }
+.msg.lion .who { color: var(--lion-deep); }
+.msg.lion .bubble {
+  background: var(--lemon-soft);
+  border: 2px solid var(--lemon);
+  border-bottom: 5px solid var(--lemon);
+  color: var(--ink);
+}
+.msg.lion .bubble::before { background: var(--lemon); }
+
+.when { font-size: 11px; color: var(--ink2); margin: 3px 4px 0; }
+
+.tools { display: flex; gap: 4px; margin-top: 3px; padding: 0 2px; }
+.tool {
+  width: 26px; height: 26px; border-radius: 9px;
+  border: none; background: var(--bg);
+  font-size: 13px; opacity: 0.9;
+}
+.msg.mine .tools { justify-content: flex-end; }
+
+.stamps { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.stamp-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--card);
+  font-size: 13px; color: var(--ink2);
+}
+.stamp-chip .cnt { font-size: 11px; font-weight: 700; }
+.stamp-chip.hot { border-color: var(--lion-deep); background: var(--lemon-soft); }
+
+/* 타이핑 표시 */
+.typing-row { flex: 0 0 auto; padding: 2px 14px 6px; display: flex; align-items: flex-end; gap: 8px; }
+.typing-row .t-av { font-size: 20px; width: 30px; height: 30px; background: var(--card); border-radius: 11px; display: flex; align-items: center; justify-content: center; }
+.t-bubble {
+  background: var(--card); border: 2px solid var(--line); border-bottom: 4px solid var(--line);
+  border-radius: 14px 14px 14px 4px; padding: 8px 12px;
+  font-size: 12.5px; color: var(--ink2);
+  display: flex; align-items: center; gap: 6px;
+}
+.t-dots { display: inline-flex; gap: 3px; }
+.t-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--lion-deep); animation: blink 1.2s infinite; }
+.t-dots i:nth-child(2) { animation-delay: 0.2s; }
+.t-dots i:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+
+/* 퀵바 */
+.quickbar { flex: 0 0 auto; background: var(--card); border-top: 3px dashed var(--line); }
+.qk-tabs { display: flex; gap: 6px; padding: 8px 12px 0; }
+.qk-tab {
+  padding: 5px 16px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--bg);
+  font-family: "Jua", sans-serif; font-size: 13px; color: var(--ink2);
+}
+.qk-tab.on { background: var(--lion-deep); border-color: var(--lion-deep); color: #fff; }
+.qk-row { display: flex; gap: 8px; overflow-x: auto; padding: 9px 12px 10px; scrollbar-width: none; }
+.qk-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto;
+  padding: 7px 14px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--bg);
+  font-size: 15px; white-space: nowrap;
+  transition: transform 0.1s, border-color 0.1s;
+}
+.chip:hover { transform: translateY(-2px); border-color: var(--lion-deep); }
+.chip:active { transform: scale(0.94); }
+.play-chip { font-family: "Jua", sans-serif; font-size: 14.5px; border-color: #F0D18A; background: var(--lemon-soft); }
+
+/* 입력 바 */
+.inputbar {
+  flex: 0 0 auto;
+  display: flex; gap: 8px; align-items: center;
+  padding: 9px 12px calc(env(safe-area-inset-bottom) + 10px);
+  background: var(--card);
+  border-top: 3px dashed var(--line);
+}
+.chat-input {
+  flex: 1;
+  border: 2.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  padding: 11px 18px;
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+}
+.chat-input:focus { border-color: var(--lion-deep); background: #fff; }
+.send-btn {
+  flex: 0 0 auto;
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--ownA), var(--ownB));
+  color: #fff; font-size: 21px;
+  box-shadow: 0 4px 0 #B05A00;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.send-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #B05A00; }
+
+/* ═══════════ 부모 모드 시트 ═══════════ */
+.overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 60;
+  background: rgba(91, 70, 54, 0.45);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.sheet {
+  width: 100%; max-width: 480px;
+  background: var(--card);
+  border-radius: 28px 28px 0 0;
+  padding: 20px 18px calc(env(safe-area-inset-bottom) + 20px);
+  max-height: 88dvh;
+  overflow-y: auto;
+  animation: slideup 0.26s ease-out;
+}
+@keyframes slideup { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.pin-view { text-align: center; padding: 8px 6px 4px; }
+.pin-view h3 { font-family: "Jua", sans-serif; font-size: 22px; }
+.pin-desc { margin: 8px 0 16px; color: var(--ink2); font-size: 14px; line-height: 1.6; }
+.pin-input {
+  width: 180px;
+  border: 3px solid var(--grape);
+  border-radius: 16px;
+  font-size: 30px;
+  text-align: center;
+  letter-spacing: 12px;
+  padding: 10px 4px;
+  outline: none;
+  color: var(--ink);
+}
+.pin-input:focus { box-shadow: 0 0 0 4px var(--grape-soft); }
+.pin-err { margin-top: 10px; color: var(--own-deep); font-size: 13px; }
+
+.sheet-btn {
+  display: block; width: 100%;
+  margin-top: 10px;
+  padding: 13px;
+  border: 2px solid var(--line); border-radius: 16px;
+  background: var(--bg); color: var(--ink);
+  font-family: "Jua", sans-serif; font-size: 16px;
+}
+.sheet-btn.primary { background: var(--grape); border-color: var(--grape); color: #fff; box-shadow: 0 4px 0 #6C5AE0; }
+.sheet-btn.primary:active { transform: translateY(2px); box-shadow: 0 1px 0 #6C5AE0; }
+
+.panel-head { display: flex; align-items: center; justify-content: space-between; }
+.panel-head h3 { font-family: "Jua", sans-serif; font-size: 20px; }
+.x-btn { width: 34px; height: 34px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); font-size: 14px; }
+
+.panel-tabs { margin-top: 14px; }
+.panel-body { margin-top: 12px; overflow-y: auto; max-height: 46dvh; }
+
+.member-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 6px; border-bottom: 2px dashed var(--line);
+}
+.member-row .m-av { font-size: 26px; width: 40px; height: 40px; background: var(--bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+.member-row .m-name { font-family: "Jua", sans-serif; flex: 1; font-size: 15px; }
+.member-row .m-name small { font-family: "Gowun Dodum", sans-serif; color: var(--ink2); font-weight: normal; margin-left: 6px; }
+.member-row .m-me { font-size: 11px; color: var(--own-deep); }
+.mini-btn { padding: 6px 12px; border-radius: 999px; border: 2px solid var(--line); background: var(--bg); font-size: 12.5px; color: var(--ink); }
+.mini-btn.on { border-color: var(--own-deep); background: var(--lemon-soft); color: var(--own-deep); }
+.mini-btn.danger { border-color: #F2B8B8; color: #C0392B; }
+
+.word-add { display: flex; gap: 8px; }
+.word-add .chat-input { flex: 1; }
+.word-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.word-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--bg);
+  font-size: 14px;
+}
+.word-chip button { border: none; background: none; font-size: 13px; color: var(--own-deep); }
+
+.log-desc { color: var(--ink2); font-size: 13px; }
+.log-list { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.log-item {
+  padding: 10px 12px; border-radius: 14px;
+  background: var(--lemon-soft); border: 2px solid var(--lemon);
+  font-size: 14px;
+}
+.log-item .l-meta { color: var(--ink2); font-size: 12px; margin-bottom: 3px; }
+
+/* ═══════════ 팝오버 / 토스트 ═══════════ */
+.popover {
+  position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%);
+  z-index: 70;
+  background: var(--card);
+  border: 2.5px solid var(--line); border-bottom-color: var(--lion-deep);
+  border-radius: 22px;
+  padding: 8px 10px;
+  display: flex; gap: 6px;
+  box-shadow: 0 10px 26px rgba(91, 70, 54, 0.22);
+  animation: pop 0.18s ease-out;
+}
+.popover button {
+  width: 40px; height: 40px; font-size: 21px;
+  border-radius: 14px; border: none; background: var(--bg);
+}
+.popover button:active { background: var(--lemon-soft); transform: scale(0.9); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 30px);
+  transform: translateX(-50%);
+  z-index: 80;
+  background: var(--ink); color: #fff;
+  padding: 10px 18px; border-radius: 999px;
+  font-size: 14px; max-width: 86vw; text-align: center;
+  box-shadow: 0 8px 20px rgba(91, 70, 54, 0.35);
+  animation: pop 0.2s ease-out;
+}
+
+/* 접근성 / 모션 */
+button:focus-visible, input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+</style>
+</head>
+<body>
+<div id="app" class="shell">
+
+  <!-- ── 입장 화면 ── -->
+  <section id="join" class="screen join">
+    <div class="balloons" aria-hidden="true">
+      <span class="bln b1"></span><span class="bln b2"></span><span class="bln b3"></span>
+      <span class="bln b4"></span><span class="bln b5"></span><span class="bln b6"></span>
+    </div>
+    <div class="join-inner">
+      <div class="mascot-wrap">
+        <svg class="mascot" viewBox="0 0 120 120" width="132" height="132" aria-hidden="true">
+          <ellipse cx="60" cy="106" rx="34" ry="7" fill="#E8C77B" opacity=".45"/>
+          <g class="m-body">
+            <!-- 갈기 -->
+            <circle cx="42" cy="40" r="13" fill="#C97B1E"/>
+            <circle cx="60" cy="32" r="14" fill="#C97B1E"/>
+            <circle cx="78" cy="40" r="13" fill="#C97B1E"/>
+            <circle cx="32" cy="54" r="11" fill="#C97B1E"/>
+            <circle cx="88" cy="54" r="11" fill="#C97B1E"/>
+            <!-- 귀 -->
+            <circle cx="36" cy="42" r="9" fill="#FFD54A"/>
+            <circle cx="84" cy="42" r="9" fill="#FFD54A"/>
+            <circle cx="36" cy="42" r="4.5" fill="#F2A65A"/>
+            <circle cx="84" cy="42" r="4.5" fill="#F2A65A"/>
+            <!-- 얼굴 -->
+            <circle cx="60" cy="64" r="30" fill="#FFD54A"/>
+            <ellipse cx="49" cy="59" rx="4" ry="5" fill="#5B4636"/>
+            <circle cx="50.4" cy="57" r="1.4" fill="#fff"/>
+            <ellipse cx="71" cy="59" rx="4" ry="5" fill="#5B4636"/>
+            <circle cx="72.4" cy="57" r="1.4" fill="#fff"/>
+            <ellipse cx="42" cy="69" rx="5" ry="3.4" fill="#FFB27D" opacity=".85"/>
+            <ellipse cx="78" cy="69" rx="5" ry="3.4" fill="#FFB27D" opacity=".85"/>
+            <rect x="56.5" y="65" width="7" height="5" rx="2.5" fill="#8D5A12"/>
+            <path d="M53 73 Q60 80 67 73" stroke="#5B4636" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <g class="paw">
+            <ellipse cx="98" cy="55" rx="8.5" ry="11" fill="#FFD54A" stroke="#C97B1E" stroke-width="3" transform="rotate(18 98 55)"/>
+            <ellipse cx="99" cy="60" rx="2.2" ry="2.6" fill="#C97B1E"/>
+          </g>
+        </svg>
+        <span class="mascot-name">리오</span>
+      </div>
+
+      <h1 class="logo">우진이 톡!</h1>
+      <p class="tag">우진이만을 위한 우리 가족 대화방 🦁</p>
+
+      <label class="field-label" for="nameInput">이름을 또박또박 적어주세요</label>
+      <input id="nameInput" class="name-input" type="text" maxlength="10" placeholder="우진" autocomplete="off">
+
+      <p class="field-label">내 얼굴 고르기 🎨</p>
+      <div id="avatarGrid" class="avatars"></div>
+
+      <button id="enterBtn" class="enter-btn" type="button">입장하기 🎈</button>
+      <p class="room-note">우진이를 향해 사랑을 또박또박!<br>안전한 말쓰기 지킴이 🛡️와 함께해요.</p>
+    </div>
+  </section>
+
+  <!-- ── 채팅 화면 ── -->
+  <section id="chat" class="screen chat hidden">
+    <header class="chat-head">
+      <div class="room">
+        <h2 id="roomTitle">우진이와 우리 가족방</h2>
+        <div id="presence" class="presence"></div>
+      </div>
+      <div class="head-ctrl">
+        <button id="soundBtn" class="icon-btn" type="button" title="효과음">🔊</button>
+        <button id="readBtn" class="icon-btn" type="button" title="소리 내어 읽기">📖</button>
+        <button id="parentBtn" class="parent-btn" type="button">🛡️ 부모님</button>
+      </div>
+    </header>
+
+    <main id="msgs" class="msgs" aria-live="polite"></main>
+
+    <div id="typingRow" class="typing-row hidden"></div>
+
+    <div class="quickbar">
+      <div class="qk-tabs">
+        <button id="tabPhrase" class="qk-tab on" type="button">문구</button>
+        <button id="tabEmoji" class="qk-tab" type="button">이모지</button>
+        <button id="tabPlay" class="qk-tab" type="button">놀이</button>
+      </div>
+      <div id="qkRowF" class="qk-row"></div>
+      <div id="qkRowE" class="qk-row hidden"></div>
+      <div id="qkRowP" class="qk-row hidden"></div>
+    </div>
+
+    <div class="inputbar">
+      <input id="input" class="chat-input" type="text" maxlength="300" placeholder="메시지 쓰기…" autocomplete="off" enterkeyhint="send">
+      <button id="sendBtn" class="send-btn" type="button" aria-label="보내기">➤</button>
+    </div>
+  </section>
+</div>
+
+<!-- ── 부모 모드 ── -->
+<div id="overlay" class="overlay hidden">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div id="pinView" class="pin-view">
+      <h3>🛡️ 부모님 공간</h3>
+      <p class="pin-desc">비밀번호를 입력하면<br>지킴이 도구를 열 수 있어요.</p>
+      <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
+      <p id="pinErr" class="pin-err hidden">비밀번호가 맞지 않아요. 다시 또박또박 눌러주세요.</p>
+      <button id="pinOk" class="sheet-btn primary" type="button">열기 🔓</button>
+      <button id="pinClose" class="sheet-btn" type="button">닫기</button>
+    </div>
+
+    <div id="panelView" class="panel-view hidden">
+      <div class="panel-head">
+        <h3>🛡️ 지킴이 도구</h3>
+        <button id="parentClose" class="x-btn" type="button" aria-label="닫기">✕</button>
+      </div>
+      <div class="qk-tabs panel-tabs">
+        <button id="tabFamily" class="qk-tab on" type="button">우리 가족</button>
+        <button id="tabWords" class="qk-tab" type="button">지킴이 단어</button>
+        <button id="tabLog" class="qk-tab" type="button">지킴이 기록</button>
+      </div>
+      <div id="famList" class="panel-body"></div>
+      <div id="wordList" class="panel-body hidden">
+        <div class="word-add">
+          <input id="wordInput" class="chat-input" type="text" maxlength="20" placeholder="지킬 단어 추가 (예: 욕설)">
+          <button id="wordAdd" class="sheet-btn primary" type="button">추가</button>
+        </div>
+        <div id="wordChips" class="word-chips"></div>
+      </div>
+      <div id="logView" class="panel-body hidden">
+        <p class="log-desc">🍬 사탕으로 바뀐 메시지를 확인할 수 있어요.</p>
+        <div id="logList" class="log-list"></div>
+      </div>
+      <button id="exportBtn" class="sheet-btn" type="button">📄 대화 기록 내보내기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 스탬프 선택 -->
+<div id="popover" class="popover hidden"></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+/* 우진이 톡! — 클라이언트 로직 */
+'use strict';
+
+const $ = (s) => document.querySelector(s);
+
+const AVATARS = ['🦁','🐶','🐱','🐰','🐻','🐨','🦊','🐼','🐯','🦁','🐸','🐵','🐧','🦄','🐮','🐷','🐹'];
+const PHRASES = ['안녕! 👋','보고 싶어! 🥰','잘 자 🌙','고마워! 💛','미안해 🙏','사랑해 ❤️','맛있게 먹어 🍙','최고야! ⭐','이 국기 맞혀봐! 🚩','끝말잇기 하자! 🎮','수학 문제 낼게! 🔢','한 나라 골라봐! 🌏'];
+const EMOJIS = ['😂','😍','🥰','😊','🤗','🤔','😭','🥺','😴','🤤','👍','👏','🙏','💪','❤️','✨','🎉','🍬','🧸','🌈','🌟','🍀'];
+const STAMPS = ['❤️','👍','😂','🎉','🍬','😍','👏','🥰'];
+const PLAY = [
+  { label: '끝말잇기 🎮', kind: 'wordchain' },
+  { label: '말장난 😆', kind: 'pun' },
+  { label: '나라·국기 🌏', kind: 'country' },
+  { label: '수학 문제 🔢', kind: 'math' },
+  { label: '라이언 인사 🦁', kind: 'hello' },
+];
+
+const state = {
+  me: null,
+  users: new Map(),
+  messages: [],
+  ws: null,
+  retry: 1000,
+  kicked: false,
+  soundOn: true,
+  ttsOn: false,
+  parent: false,
+  demo: location.search.includes('demo'),
+  lastDay: null,
+  typing: new Map(),
+  typingTimer: null,
+  lastTypingSent: 0,
+  audio: null,
+  titleOrig: document.title,
+};
+
+const el = {
+  join: $('#join'), chat: $('#chat'), msgs: $('#msgs'),
+  typingRow: $('#typingRow'), presence: $('#presence'),
+  nameInput: $('#nameInput'), avatarGrid: $('#avatarGrid'), enterBtn: $('#enterBtn'),
+  soundBtn: $('#soundBtn'), readBtn: $('#readBtn'), parentBtn: $('#parentBtn'),
+  input: $('#input'), sendBtn: $('#sendBtn'),
+  tabPhrase: $('#tabPhrase'), tabEmoji: $('#tabEmoji'), tabPlay: $('#tabPlay'),
+  qkRowF: $('#qkRowF'), qkRowE: $('#qkRowE'), qkRowP: $('#qkRowP'),
+  overlay: $('#overlay'),
+  pinView: $('#pinView'), panelView: $('#panelView'),
+  pinInput: $('#pinInput'), pinOk: $('#pinOk'), pinClose: $('#pinClose'), pinErr: $('#pinErr'),
+  tabFamily: $('#tabFamily'), tabWords: $('#tabWords'), tabLog: $('#tabLog'),
+  famList: $('#famList'), wordList: $('#wordList'), logView: $('#logView'),
+  wordInput: $('#wordInput'), wordAdd: $('#wordAdd'), wordChips: $('#wordChips'),
+  logList: $('#logList'), exportBtn: $('#exportBtn'), parentClose: $('#parentClose'),
+  popover: $('#popover'), toast: $('#toast'),
+};
+
+/* ───────── 유틸 ───────── */
+function toast(text, ms = 2600) {
+  el.toast.textContent = text;
+  el.toast.classList.remove('hidden');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.toast.classList.add('hidden'), ms);
+}
+function hhmm(ts) {
+  return new Date(ts).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+}
+function dayLabel(ts) {
+  const d = new Date(ts);
+  const today = new Date();
+  const y = new Date(); y.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return '오늘';
+  if (d.toDateString() === y.toDateString()) return '어제';
+  return d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' });
+}
+
+/* ───────── 소리 / 읽어주기 ───────── */
+function ensureAudio() {
+  if (state.audio) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    state.audio = new AC();
+  } catch { /* 지원 안 함 */ }
+}
+function pop() {
+  if (!state.soundOn || !state.audio) return;
+  try {
+    const t0 = state.audio.currentTime;
+    const o = state.audio.createOscillator(), g = state.audio.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(660, t0);
+    o.frequency.exponentialRampToValueAtTime(980, t0 + 0.09);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+    o.connect(g); g.connect(state.audio.destination);
+    o.start(t0); o.stop(t0 + 0.24);
+  } catch { /* 무시 */ }
+}
+let _koVoice = null;
+function speak(text) {
+  if (!('speechSynthesis' in window)) { toast('이 기기에서는 읽어주기를 지원하지 않아요.'); return; }
+  speechSynthesis.cancel();
+  if (!_koVoice) {
+    const v = speechSynthesis.getVoices();
+    _koVoice = v.find(x => x.lang && x.lang.replace('_', '-').toLowerCase().startsWith('ko')) || null;
+  }
+  const u = new SpeechSynthesisUtterance(text);
+  if (_koVoice) u.voice = _koVoice;
+  u.lang = 'ko-KR'; u.rate = 0.95; u.pitch = 1.1;
+  speechSynthesis.speak(u);
+}
+
+/* ───────── 접속 ───────── */
+function wsUrl() {
+  return (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
+}
+function connect() {
+  if (state.ws && state.ws.readyState === WebSocket.OPEN) return;
+  const ws = new WebSocket(wsUrl());
+  state.ws = ws;
+  ws.onopen = () => {
+    state.retry = 1000;
+    ws.send(JSON.stringify({
+      t: 'hello',
+      name: el.nameInput.value.trim() || '친구',
+      avatar: state.avatar || '🦁',
+    }));
+    if (!state.kicked) { el.join.classList.add('hidden'); el.chat.classList.remove('hidden'); el.input.focus(); }
+  };
+  ws.onmessage = (ev) => { let d; try { d = JSON.parse(ev.data); } catch { return; } onMsg(d); };
+  ws.onclose = () => {
+    state.ws = null;
+    if (state.me && !state.kicked) {
+      toast('연결이 끊어졌어요. 다시 이어볼게요…', 3000);
+      setTimeout(connect, state.retry);
+      state.retry = Math.min(state.retry * 2, 8000);
+    }
+  };
+  ws.onerror = () => {};
+}
+
+/* ───────── 서버 메시지 처리 ───────── */
+function onMsg(d) {
+  switch (d.t) {
+    case 'welcome': {
+      state.me = d.you;
+      state.users = new Map(d.users.map(u => [u.id, u]));
+      state.messages = [];
+      state.lastDay = null;
+      el.msgs.innerHTML = '';
+      (d.history || []).forEach(m => addMsg(m, { silent: true }));
+      renderPresence();
+      if (state.demo) runDemo();
+      if (!state.kicked) { el.join.classList.add('hidden'); el.chat.classList.remove('hidden'); el.input.focus(); }
+      break;
+    }
+    case 'joined': state.users.set(d.u.id, d.u); renderPresence(); break;
+    case 'left': state.users.delete(d.id); state.typing.delete(d.id); renderPresence(); break;
+    case 'users': state.users = new Map(d.users.map(u => [u.id, u])); renderPresence(); break;
+    case 'msg': addMsg(d.m); break;
+    case 'sys': {
+      const row = document.createElement('div');
+      row.className = 'day-divider';
+      row.innerHTML = `<span class="day-chip">🎵 ${esc(d.text)}</span>`;
+      el.msgs.appendChild(row);
+      scrollIfNear();
+      break;
+    }
+    case 'typing': {
+      if (d.s) {
+        state.typing.set(d.id, { name: d.name, color: d.color, ts: Date.now() });
+        renderTyping();
+      } else {
+        state.typing.delete(d.id); renderTyping();
+      }
+      break;
+    }
+    case 'react': {
+      const m = state.messages.find(x => x.id === d.id);
+      if (!m) return;
+      m.reactions = m.reactions || {};
+      const cur = m.reactions[d.e] || { count: 0, mine: false };
+      cur.count = d.count;
+      if (d.by === state.me.id) cur.mine = d.on;
+      m.reactions[d.e] = cur;
+      const body = el.msgs.querySelector(`[data-id="${d.id}"] .body`);
+      if (body) renderStamps(m, body);
+      break;
+    }
+    case 'notice': toast(d.text); break;
+    case 'parent_ok': {
+      state.parent = true;
+      el.pinView.classList.add('hidden');
+      el.panelView.classList.remove('hidden');
+      buildFamily();
+      buildWords(d.blocked);
+      buildLog(d.mod);
+      toast('지킴이 공간이 열렸어요. 🛡️');
+      break;
+    }
+    case 'parent_no': {
+      el.pinErr.classList.remove('hidden');
+      el.pinInput.value = '';
+      el.pinInput.focus();
+      break;
+    }
+    case 'blocked_update':
+      if (!el.panelView.classList.contains('hidden')) buildWords(d.blocked);
+      break;
+    case 'mod_update': {
+      if (!el.logView.classList.contains('hidden')) insertLog(d.item);
+      const li = document.createElement('div');
+      li.className = 'day-divider';
+      li.innerHTML = `<span class="day-chip">🍬 안전한 말을 써주세요</span>`;
+      el.msgs.appendChild(li);
+      scrollIfNear();
+      break;
+    }
+    case 'kicked': {
+      state.kicked = true;
+      state.me = null;
+      el.overlay.classList.add('hidden');
+      toast('지킴이님이 잠시 쉬어 가라고 하셨어요. 🛡️');
+      setTimeout(() => { try { state.ws && state.ws.close(); } catch {} }, 300);
+      el.chat.classList.add('hidden');
+      el.join.classList.remove('hidden');
+      break;
+    }
+    case 'muted':
+      toast(d.on ? '지금은 이야기를 잠시 쉬어요. 지킴이가 알려줄게요. 🌙' : '이야기할 수 있어요! 😊');
+      break;
+  }
+}
+
+/* ───────── 메시지 렌더링 ───────── */
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function addMsg(m, opts = {}) {
+  if (!m || typeof m.id !== 'string') return;
+  if (state.messages.some(x => x.id === m.id)) return;
+  m.reactions = m.reactions || {};
+  state.messages.push(m);
+  renderMsg(m);
+  const mine = m.from === (state.me && state.me.id);
+  if (!opts.silent && !mine) {
+    if (state.soundOn) pop();
+    if (state.ttsOn && !m.lion) speak(m.text);
+    if (document.hidden) document.title = '💬 ' + state.titleOrig;
+  }
+  scrollIfNear(mine);
+}
+function scrollIfNear(force) {
+  const c = el.msgs;
+  if (force || c.scrollTop + c.clientHeight >= c.scrollHeight - 90) {
+    requestAnimationFrame(() => { c.scrollTop = c.scrollHeight; });
+  }
+}
+function renderMsg(m) {
+  const mine = m.from === (state.me && state.me.id);
+  const day = dayLabel(m.ts);
+  if (state.lastDay !== day) {
+    state.lastDay = day;
+    const dv = document.createElement('div');
+    dv.className = 'day-divider';
+    dv.innerHTML = `<span class="day-chip">${day}</span>`;
+    el.msgs.appendChild(dv);
+  }
+
+  const row = document.createElement('div');
+  row.className = 'msg' + (mine ? ' mine' : '') + (m.lion ? ' lion' : '');
+  row.dataset.id = m.id;
+
+  const av = document.createElement('div');
+  av.className = 'avatar';
+  av.textContent = m.avatar || '🦁';
+  row.appendChild(av);
+
+  const body = document.createElement('div');
+  body.className = 'body';
+
+  const who = document.createElement('div');
+  who.className = 'who';
+  who.style.color = m.color || '#43BE9A';
+  who.textContent = m.lion ? '라이언' : (mine ? '나' : (m.name || '친구'));
+  body.appendChild(who);
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.style.setProperty('--c', m.color || '#43BE9A');
+  bubble.textContent = m.text;
+  body.appendChild(bubble);
+
+  const tools = document.createElement('div');
+  tools.className = 'tools';
+  const ttsBtn = document.createElement('button');
+  ttsBtn.className = 'tool'; ttsBtn.textContent = '🔊'; ttsBtn.title = '소리 내어 읽기';
+  ttsBtn.addEventListener('click', (e) => { e.stopPropagation(); speak(m.text); });
+  const stBtn = document.createElement('button');
+  stBtn.className = 'tool'; stBtn.textContent = '😊'; stBtn.title = '스탬프 찍기';
+  stBtn.addEventListener('click', (e) => { e.stopPropagation(); openPopover(row, m); });
+  tools.appendChild(ttsBtn); tools.appendChild(stBtn);
+  body.appendChild(tools);
+
+  const st = document.createElement('div');
+  st.className = 'stamps';
+  renderStamps(m, body);
+  body.appendChild(st);
+
+  const when = document.createElement('div');
+  when.className = 'when';
+  when.textContent = hhmm(m.ts);
+  body.appendChild(when);
+
+  row.appendChild(body);
+  el.msgs.appendChild(row);
+}
+
+function renderStamps(m, bodyEl) {
+  const cont = bodyEl.querySelector('.stamps');
+  if (!cont) return;
+  cont.innerHTML = '';
+  const entries = Object.entries(m.reactions || {}).filter(([, v]) => v && v.count > 0);
+  for (const [e, v] of entries) {
+    const chip = document.createElement('button');
+    chip.className = 'stamp-chip' + (v.mine ? ' hot' : '');
+    chip.textContent = e;
+    const cnt = document.createElement('span');
+    cnt.className = 'cnt'; cnt.textContent = v.count;
+    chip.appendChild(cnt);
+    chip.addEventListener('click', () => sendReact(m, e, !v.mine));
+    cont.appendChild(chip);
+  }
+}
+function sendReact(m, e, on) {
+  sendWs({ t: 'react', id: m.id, e, on });
+  const cur = m.reactions[e] || { count: 0, mine: false };
+  cur.mine = on;
+  cur.count = Math.max(0, cur.count + (on ? 1 : -1));
+  if (cur.count === 0) delete m.reactions[e];
+  else m.reactions[e] = cur;
+  const body = el.msgs.querySelector(`[data-id="${m.id}"] .body`);
+  if (body) renderStamps(m, body);
+}
+
+/* ───────── 스탬프 팝오버 ───────── */
+function openPopover(row, m) {
+  el.popover.innerHTML = '';
+  for (const e of STAMPS) {
+    const b = document.createElement('button');
+    b.textContent = e;
+    b.addEventListener('click', () => {
+      const cur = m.reactions[e];
+      sendReact(m, e, !(cur && cur.mine));
+      closePopover();
+    });
+    el.popover.appendChild(b);
+  }
+  el.popover.classList.remove('hidden');
+}
+function closePopover() {
+  el.popover.classList.add('hidden');
+  el.popover.innerHTML = '';
+}
+document.addEventListener('pointerdown', (e) => {
+  if (!el.popover.classList.contains('hidden') && !el.popover.contains(e.target)) closePopover();
+  ensureAudio();
+});
+
+/* ───────── 타이핑 표시 ───────── */
+function renderTyping() {
+  clearTimeout(state.typingTimer);
+  const now = Date.now();
+  for (const [id, v] of state.typing) if (now - v.ts > 2600) state.typing.delete(id);
+  if (state.typing.size === 0) { el.typingRow.classList.add('hidden'); return; }
+  const names = [...state.typing.values()].map(v => `<b style="color:${v.color}">${esc(v.name)}</b>`).join(', ');
+  el.typingRow.innerHTML = `
+    <span class="t-av">🦁</span>
+    <span class="t-bubble"><span class="t-dots"><i></i><i></i><i></i></span> ${names} 님도 두들두들 쓰는 중…</span>`;
+  el.typingRow.classList.remove('hidden');
+  state.typingTimer = setTimeout(renderTyping, 800);
+}
+function sendTyping(on) {
+  const now = Date.now();
+  if (on && now - state.lastTypingSent < 600) return;
+  state.lastTypingSent = now;
+  sendWs({ t: 'typing', s: on });
+}
+
+/* ───────── 보내기 ───────── */
+function sendWs(obj) {
+  if (state.ws && state.ws.readyState === WebSocket.OPEN) state.ws.send(JSON.stringify(obj));
+}
+function send() {
+  const text = el.input.value.trim();
+  if (!text) return;
+  sendWs({ t: 'msg', text });
+  el.input.value = '';
+  sendTyping(false);
+}
+
+/* ───────── 상단 표시 ───────── */
+function renderPresence() {
+  const list = [...state.users.values()];
+  const mutedCount = list.filter(u => u.muted).length;
+  let html = '<span class="p-num">' + list.length + '명이 함께해요';
+  if (mutedCount > 0) html += ' · ' + mutedCount + '명 쉬는 중';
+  html += '</span>';
+  const avs = list.slice(0, 10).map(u => `<span class="p-av" title="${esc(u.name)}">${u.avatar}</span>`).join('');
+  el.presence.innerHTML = avs + html;
+}
+
+/* ───────── 퀵바 ───────── */
+function setTab(onBtn, rows) {
+  [el.tabPhrase, el.tabEmoji, el.tabPlay].forEach(b => b.classList.remove('on'));
+  onBtn.classList.add('on');
+  [el.qkRowF, el.qkRowE, el.qkRowP].forEach(r => r.classList.add('hidden'));
+  for (const r of rows) r.classList.remove('hidden');
+}
+function fillQuick() {
+  for (const p of PHRASES) {
+    const c = document.createElement('button');
+    c.className = 'chip'; c.textContent = p;
+    c.addEventListener('click', () => { el.input.value = p; send(); });
+    el.qkRowF.appendChild(c);
+  }
+  for (const e of EMOJIS) {
+    const c = document.createElement('button');
+    c.className = 'chip'; c.textContent = e; c.style.fontSize = '20px';
+    c.addEventListener('click', () => { el.input.value = e; send(); });
+    el.qkRowE.appendChild(c);
+  }
+  for (const p of PLAY) {
+    const c = document.createElement('button');
+    c.className = 'chip play-chip'; c.textContent = p.label;
+    c.addEventListener('click', () => sendWs({ t: 'lion', kind: p.kind }));
+    el.qkRowP.appendChild(c);
+  }
+  el.tabPhrase.addEventListener('click', () => setTab(el.tabPhrase, [el.qkRowF]));
+  el.tabEmoji.addEventListener('click', () => setTab(el.tabEmoji, [el.qkRowE]));
+  el.tabPlay.addEventListener('click', () => setTab(el.tabPlay, [el.qkRowP]));
+}
+
+/* ───────── 입장 화면 ───────── */
+function initJoin() {
+  state.avatar = localStorage.getItem('tobak_avatar') || '🦁';
+  el.nameInput.value = localStorage.getItem('tobak_name') || '우진';
+  for (const a of [...new Set(AVATARS)]) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'avatar-btn' + (a === state.avatar ? ' on' : '');
+    b.textContent = a;
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.avatar-btn').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      state.avatar = a;
+      localStorage.setItem('tobak_avatar', a);
+    });
+    el.avatarGrid.appendChild(b);
+  }
+  el.enterBtn.addEventListener('click', () => {
+    const name = el.nameInput.value.trim();
+    if (!name) {
+      el.nameInput.classList.remove('shake');
+      void el.nameInput.offsetWidth;
+      el.nameInput.classList.add('shake');
+      el.nameInput.focus();
+      toast('이름을 먼저 또박또박 적어주세요 ✏️');
+      return;
+    }
+    localStorage.setItem('tobak_name', name);
+    state.kicked = false;
+    connect();
+  });
+  el.nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') el.enterBtn.click(); });
+}
+
+/* ───────── 데모 모드(?demo=1) ───────── */
+function runDemo() {
+  setTimeout(() => {
+    const mk = (id, name, avatar, color, text, ts, lion) => ({
+      id, from: id, name, avatar, color, text, ts, lion: !!lion, reactions: {}, muted: false,
+    });
+    state.users.set('demo-a', { id: 'demo-a', name: '엄마', avatar: '🐰', color: '#FF8E53', muted: false });
+    state.users.set('demo-b', { id: 'demo-b', name: '아빠', avatar: '🦉', color: '#7C9BF0', muted: false });
+    renderPresence();
+    const n = Date.now();
+    const m1 = mk('demo-a', '엄마', '🐰', '#FF8E53', '우진아! 오늘 학교에서 뭐 했어? 😊', n - 200000);
+    addMsg(m1, { silent: true });
+    state.typing.set('demo-b', { name: '아빠', color: '#7C9BF0', ts: Date.now() });
+    renderTyping();
+    setTimeout(() => {
+      state.typing.delete('demo-b');
+      renderTyping();
+      addMsg(mk('demo-b', '아빠', '🦉', '#7C9BF0', '끝말잇기 하자! 첫말은 ‘사자’! 🦁', n - 110000));
+      setTimeout(() => {
+        m1.reactions['❤️'] = { count: 2, mine: true };
+        const row = el.msgs.querySelector(`[data-id="${m1.id}"] .body`);
+        if (row) renderStamps(m1, row);
+        addMsg(mk('demo-lion1', '라이언', '🦁', '#E09A00', '말장난 하나! 수학책이 울 때 하는 말 → “내 문제가 많아서 그래!” 😂', n - 60000, true));
+        setTimeout(() => {
+          addMsg(mk('demo-lion2', '라이언', '🦁', '#E09A00', '오늘의 나라 🇫🇷 프랑스! 수도는 파리! 에펠탑이 유명해!', n - 30000, true));
+        }, 2400);
+      }, 2200);
+    }, 2000);
+  }, 900);
+}
+
+/* ───────── 부모 모드 ───────── */
+function openParent() {
+  el.overlay.classList.remove('hidden');
+  el.pinView.classList.remove('hidden');
+  el.panelView.classList.add('hidden');
+  el.pinInput.value = '';
+  el.pinErr.classList.add('hidden');
+  setTimeout(() => el.pinInput.focus(), 80);
+}
+function closeParent() { el.overlay.classList.add('hidden'); el.pinErr.classList.add('hidden'); }
+function buildFamily() {
+  el.famList.innerHTML = '';
+  const list = [...state.users.values()];
+  if (list.length === 0) { el.famList.innerHTML = `<p class="log-desc">아직 아무도 없어요.</p>`; return; }
+  for (const u of list) {
+    const isMe = u.id === state.me.id;
+    const row = document.createElement('div');
+    row.className = 'member-row';
+    const av = document.createElement('span');
+    av.className = 'm-av'; av.textContent = u.avatar;
+    row.appendChild(av);
+    const name = document.createElement('div');
+    name.className = 'm-name';
+    name.innerHTML = `${esc(u.name)} ${isMe ? '<small class="m-me">나</small>' : ''}`;
+    row.appendChild(name);
+    if (!isMe) {
+      const mute = document.createElement('button');
+      mute.className = 'mini-btn' + (u.muted ? ' on' : '');
+      mute.textContent = u.muted ? '말 하기' : '조용히';
+      mute.addEventListener('click', () => sendWs({ t: 'parent_mute', id: u.id, on: !u.muted }));
+      row.appendChild(mute);
+      const kick = document.createElement('button');
+      kick.className = 'mini-btn danger';
+      kick.textContent = '나가 해';
+      kick.addEventListener('click', () => { if (confirm(u.name + '님을 대화방에서 나가 드릴까요?')) sendWs({ t: 'parent_kick', id: u.id }); });
+      row.appendChild(kick);
+    }
+    el.famList.appendChild(row);
+  }
+}
+function buildWords(list) {
+  el.wordChips.innerHTML = '';
+  for (const w of list || []) {
+    const chip = document.createElement('span');
+    chip.className = 'word-chip';
+    const txt = document.createElement('span'); txt.textContent = w;
+    const del = document.createElement('button');
+    del.textContent = '✕';
+    del.addEventListener('click', () => sendWs({ t: 'parent_block', word: w, add: false }));
+    chip.appendChild(txt); chip.appendChild(del);
+    el.wordChips.appendChild(chip);
+  }
+}
+function buildLog(mods) {
+  el.logList.innerHTML = '';
+  (mods || []).slice().reverse().forEach(insertLog);
+}
+function insertLog(item) {
+  const d = document.createElement('div');
+  d.className = 'log-item';
+  const meta = document.createElement('div');
+  meta.className = 'l-meta';
+  meta.textContent = `${hhmm(item.ts)} · ${item.name}님`;
+  const body = document.createElement('div');
+  body.textContent = item.text;
+  d.appendChild(meta); d.appendChild(body);
+  el.logList.insertBefore(d, el.logList.firstChild);
+}
+function exportLog() {
+  const lines = [];
+  let lastDay = null;
+  for (const m of state.messages) {
+    const day = dayLabel(m.ts);
+    if (day !== lastDay) { lines.push('── ' + day + ' ──'); lastDay = day; }
+    const who = m.lion ? '라이언' : (m.from === state.me.id ? '나' : m.name);
+    lines.push(`[${hhmm(m.ts)}] ${who}: ${m.text}`);
+  }
+  lines.unshift('우진이 톡! 대화 기록 🍬');
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  const d = new Date();
+  a.href = URL.createObjectURL(blob);
+  a.download = `우진이톡_대화기록_${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.txt`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  toast('대화 기록을 내보냈어요. 📄');
+}
+
+/* ───────── 이벤트 연결 ───────── */
+function bindEvents() {
+  el.sendBtn.addEventListener('click', send);
+  el.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
+  el.input.addEventListener('input', () => sendTyping(true));
+  el.input.addEventListener('blur', () => sendTyping(false));
+
+  el.soundBtn.addEventListener('click', () => {
+    state.soundOn = !state.soundOn;
+    el.soundBtn.textContent = state.soundOn ? '🔊' : '🔇';
+    el.soundBtn.classList.toggle('off', !state.soundOn);
+  });
+  el.readBtn.addEventListener('click', () => {
+    state.ttsOn = !state.ttsOn;
+    el.readBtn.textContent = state.ttsOn ? '📖' : '📕';
+    el.readBtn.classList.toggle('off', !state.ttsOn);
+    toast(state.ttsOn ? '새 메시지를 소리 내어 읽어줄게요 🔊' : '읽어주기를 끌게요');
+  });
+
+  el.parentBtn.addEventListener('click', openParent);
+  el.pinClose.addEventListener('click', closeParent);
+  el.parentClose.addEventListener('click', closeParent);
+  el.overlay.addEventListener('pointerdown', (e) => { if (e.target === el.overlay) closeParent(); });
+  el.pinInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') el.pinOk.click(); });
+  el.pinOk.addEventListener('click', () => {
+    const pin = el.pinInput.value.trim();
+    if (!pin || pin.length < 4) { toast('비밀번호 4자리를 눌러주세요.'); return; }
+    sendWs({ t: 'parent_enter', pin });
+  });
+
+  el.tabFamily.addEventListener('click', () => setPanelTab(el.tabFamily, el.famList));
+  el.tabWords.addEventListener('click', () => setPanelTab(el.tabWords, el.wordList));
+  el.tabLog.addEventListener('click', () => setPanelTab(el.tabLog, el.logView));
+  el.wordAdd.addEventListener('click', () => {
+    const w = el.wordInput.value.trim();
+    if (!w) return;
+    sendWs({ t: 'parent_block', word: w, add: true });
+    el.wordInput.value = '';
+  });
+  el.wordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') el.wordAdd.click(); });
+  el.exportBtn.addEventListener('click', exportLog);
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) document.title = state.titleOrig;
+  });
+  window.addEventListener('beforeunload', () => { if (state.ws) sendTyping(false); });
+}
+function setPanelTab(tabBtn, bodyEl) {
+  document.querySelectorAll('.panel-tabs .qk-tab').forEach(x => x.classList.remove('on'));
+  tabBtn.classList.add('on');
+  for (const b of [el.famList, el.wordList, el.logView]) b.classList.add('hidden');
+  bodyEl.classList.remove('hidden');
+}
+
+/* ───────── 시작 ───────── */
+initJoin();
+fillQuick();
+bindEvents();
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => { _koVoice = null; };
+}
+
+</script>
+</body>
+</html>
