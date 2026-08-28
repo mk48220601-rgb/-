@@ -49,7 +49,7 @@ const lastTyping = new Map();// 유저별 마지막 타이핑 브로드캐스트
 // 기본 안전 단어 목록 (부모 모드에서 자유롭게 추가/삭제 가능)
 let blocked = ['씨발','시발','ㅅㅂ','병신','ㅂㅅ','존나','지랄','미친','닥쳐','느금마','ㅁㅊ','개새끼','좆까'];
 
-// 라이언(리오)이 우진이에게 들려주는 말자료
+// 라라(리오)이 우진이에게 들려주는 말자료
 const LION = {
   pun: [
     '수학책이 울 때 하는 말? → “내 문제가 많아서 그래!” 😂',
@@ -89,12 +89,12 @@ const LION = {
   hello: [
     '우진아! 🦁 오늘도 만나서 반가워! 오늘 기분은 어때?',
     '우진아! 오늘 뭐 하고 놀까? 끝말잇기? 수학? 아니면 나라 퀴즈? 🦁',
-    '라이언이 우진이를 기다리고 있었어! 🧡 오늘도 즐겁게 놀자!',
+    '라라이 우진이를 기다리고 있었어! 🧡 오늘도 즐겁게 놀자!',
   ],
 };
 const LION_WELCOME = [
   '우진이 왔다!! 🦁🦁 오늘도 같이 놀자!',
-  '우진이 입장! 라이언이 반가워서 꼬리를 흔들어! 🧡',
+  '우진이 입장! 라라이 반가워서 꼬리를 흔들어! 🧡',
   '우진이야? 우리 대화방의 주인공이 왔구나! 🦁',
 ];
 const OTHERS_WELCOME = [
@@ -103,14 +103,14 @@ const OTHERS_WELCOME = [
 ];
 
 // ============================================================
-// 라이언 대화 봇 — 우진이가 컴퓨터(라이언)와 실시간으로 놀이 대화
+// 라라 대화 봇 — 우진이가 컴퓨터(라라)와 실시간으로 놀이 대화
 // 규칙 기반이라 외부 AI API가 필요 없고, 아이에게 안전한 문장만 써요.
 // ============================================================
 const BOT_WORDBANK = [
   '가방','가게','가족','가수','강아지','고양이','고래','고구마','고무줄',
   '나비','나라','나무','나이','노래','노트','노란색','눈사람',
   '다리','다음','다람쥐','도넛','도시','도깨비','도마뱀','동물',
-  '라면','라디오','라이언','라켓','로봇','로켓','레몬',
+  '라면','라디오','라라','라켓','로봇','로켓','레몬',
   '마법','마을','마늘','모자','모래','모나리자','멋쟁이',
   '바다','바나나','바람','보물','보라색','보트','배','병아리',
   '사자','사과','사탕','사다리','소','소방차','소나무','새','세상','수박',
@@ -145,7 +145,7 @@ function wordFor(startSyllable) {
 }
 function lionSay(text) {
   const m = {
-    id: uid(), from: 'lion', name: '라이언', avatar: '🦁', color: '#E09A00',
+    id: uid(), from: 'lion', name: '라라', avatar: '🦁', color: '#E09A00',
     text, ts: Date.now(), lion: true, muted: false,
   };
   messages.push(m);
@@ -165,15 +165,15 @@ function mathProblem() {
   return { q: `${a} ${op} ${b}`, ans };
 }
 function botMenu(p) {
-  lionSay(`${p.name}아! 라이언이랑 뭐 하고 놀까? 🦁\n① 끝말잇기 ② 수학 문제 ③ 국기 퀴즈 ④ 말장난 ⑤ 나라 상식\n그냥 “끝말잇기!”라고 말하면 바로 시작해!`);
+  lionSay(`${p.name}아! 라라이랑 뭐 하고 놀까? 🦁\n① 끝말잇기 ② 수학 문제 ③ 국기 퀴즈 ④ 말장난 ⑤ 나라 상식\n그냥 “끝말잇기!”라고 말하면 바로 시작해!`);
 }
 
-// ============ 라이언 AI 챗봇 (Google Gemini 무료 티어) ============
+// ============ 라라 AI 챗봇 (Google Gemini 무료 티어) ============
 const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const AI_EVERYTHING = (process.env.AI_EVERYTHING || '') === '1'; // 1이면 모든 대화에 AI가 응답
 const LION_SYSTEM_PROMPT = [
-  '너는 5~7살 한국 어린이 "우진"이를 위한 마스코트 캐릭터 "라이언"(노란 사자)이야.',
+  '너는 5~7살 한국 어린이 "우진"이를 위한 마스코트 캐릭터 "라라"(노란 사자)이야.',
   '우진이와 그 가족들이 함께 보는 가족 채팅방에 있어. 반말로 친근하게.',
   '말투: 따뜻하고 귀엽게, 이모지 가끔. 문장은 짧게 (1~2문장, 한 번 답에 2문장 이내).',
   '아이 눈높이: 어려운 단어는 쉬운 말로. 관심사(나라·국기, 수학, 끝말잇기, 농담·말장난)와 자연스럽게 연결해.',
@@ -186,7 +186,7 @@ const lastAi = new Map();   // 사용자 id -> 마지막 AI 호출 시각
 function aiEnabled() { return !!GEMINI_KEY; }
 
 async function askLion(p, text, recent) {
-  const ctx = recent.slice(-5).map(x => `${x.name}${x.lion ? '(라이언)' : ''}: ${x.text}`).join('\n') || '아직 대화가 없어요.';
+  const ctx = recent.slice(-5).map(x => `${x.name}${x.lion ? '(라라)' : ''}: ${x.text}`).join('\n') || '아직 대화가 없어요.';
   const userMsg = `[지금까지 대화]\n${ctx}\n\n[방금 "${p.name}"이/가 말했어]\n${text}`;
   const body = {
     systemInstruction: { parts: [{ text: LION_SYSTEM_PROMPT }] },
@@ -205,14 +205,14 @@ async function askLion(p, text, recent) {
     });
     if (!res.ok) {
       const e = await res.text().catch(() => '');
-      console.error('[라이언 AI] API 오류', res.status, String(e).slice(0, 160));
+      console.error('[라라 AI] API 오류', res.status, String(e).slice(0, 160));
       return { text: null, code: res.status };
     }
     const data = await res.json();
     const out = (data?.candidates?.[0]?.content?.parts || []).map(x => x.text || '').join('') || '';
     return { text: out.trim().slice(0, 300), code: 200 };
   } catch (err) {
-    console.error('[라이언 AI] 요청 실패', String(err.message || err).slice(0, 120));
+    console.error('[라라 AI] 요청 실패', String(err.message || err).slice(0, 120));
     return { text: null, code: -1 };
   } finally {
     clearTimeout(timer);
@@ -227,7 +227,7 @@ function llmChat(p, text, recent) {
   if (aiBudget.calls.length >= 5) return;               // 방 전체 1분에 5회 한도 (요금 폭주 방지)
   lastAi.set(p.id, now);
   aiBudget.calls.push(now);
-  lionSay('라이언 생각하는 중… 🤔');
+  lionSay('라라 생각하는 중… 🤔');
   askLion(p, text, recent).then(r => {
     if (r.text) lionSay(censor(r.text).slice(0, 300));
     else lionSay('아차, 방금 말이 잘 안 들렸어… 다음에 다시 물어봐줘! (또는 끝말잇기 하자 🎮)');
@@ -237,7 +237,7 @@ function maybeBot(ws, p, rawText) {
   const t = rawText.replace(/\s+/g, ' ').trim();
   if (!t) return;
   const st = botState.get(p.id) || (botState.set(p.id, {}), botState.get(p.id));
-  const mentions = t.includes('라이언');
+  const mentions = t.includes('라라') || t.includes('라이언');
   const num = t.replace(/,/g, '').trim();
   const isNum = /^\d+$/.test(num);
   const isCommandMsg = /끝말잇기|수학|문제|국기|퀴즈|나라|말장난|농담|안녕|심심|힘들|아파|슬퍼|졸려|고마워|사랑해|최고|놀자|뭐 하|같이/.test(t);
@@ -535,7 +535,7 @@ wss.on('connection', (ws) => {
       return;
     }
 
-    // ----- 라이언 놀이 (대화 봇 실행기) -----
+    // ----- 라라 놀이 (대화 봇 실행기) -----
     if (obj.t === 'lion') {
       if (!rateOk(ws)) return;
       const st = botState.get(p.id) || (botState.set(p.id, {}), botState.get(p.id));
@@ -559,7 +559,7 @@ wss.on('connection', (ws) => {
       } else if (obj.kind === 'chat' || obj.kind === 'hello') {
         if (aiEnabled()) {
           lastAi.set(p.id, 0);
-          llmChat(p, randPick(['안녕, 라이언! 오늘 뭐 하고 놀까?', '라이언, 오늘 기분 어때? 나랑 이야기하자!']), messages.slice(-6));
+          llmChat(p, randPick(['안녕, 라라! 오늘 뭐 하고 놀까?', '라라, 오늘 기분 어때? 나랑 이야기하자!']), messages.slice(-6));
         } else {
           botMenu(p);
         }
@@ -641,5 +641,5 @@ wss.on('connection', (ws) => { ws.on('pong', () => { ws.isAlive = true; }); });
 server.listen(PORT, () => {
   console.log(`우진이 톡 서버 실행 중 → http://localhost:${PORT}`);
   console.log(`부모 모드 PIN: ${PARENT_PIN} (환경변수 PARENT_PIN으로 변경 가능)`);
-  console.log(`라이언 AI 챗봇: ${aiEnabled() ? 'ON (' + GEMINI_MODEL + ')' : 'OFF — GEMINI_API_KEY 미설정이라 규칙 기반 봇으로 동작'} `);
+  console.log(`라라 AI 챗봇: ${aiEnabled() ? 'ON (' + GEMINI_MODEL + ')' : 'OFF — GEMINI_API_KEY 미설정이라 규칙 기반 봇으로 동작'} `);
 });
