@@ -271,8 +271,16 @@ function renderMsg(m) {
   row.dataset.id = m.id;
 
   const av = document.createElement('div');
-  av.className = 'avatar';
-  av.textContent = m.avatar || '🦁';
+  av.className = 'avatar' + (m.lion ? ' lion-av' : '');
+  if (m.lion) {
+    const im = document.createElement('img');
+    im.src = 'lala.png';
+    im.alt = '라라';
+    im.className = 'lion-avatar';
+    av.appendChild(im);
+  } else {
+    av.textContent = m.avatar || '🦁';
+  }
   row.appendChild(av);
 
   const body = document.createElement('div');
