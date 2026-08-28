@@ -96,7 +96,7 @@ input { font-family: inherit; }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 .mascot-name {
   position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
-  background: var(--mane); color: #FFF3D6;
+  background: #FF7AA2; color: #fff;
   font-family: "Jua", sans-serif; font-size: 14px;
   padding: 2px 12px; border-radius: 999px;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
@@ -494,3 +494,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--blue); outl
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* 라라 이미지 아바타 (채팅 말풍선) */
+.msg .avatar { overflow: hidden; }
+.lion-avatars-img, .lion-avatar { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block; }
+.msg.lion .avatar { background: var(--lemon-soft); }
+img.mascot { border-radius: 26px; background: #fff; box-shadow: 0 6px 16px rgba(91, 70, 54, 0.12); }
