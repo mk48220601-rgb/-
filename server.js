@@ -167,6 +167,72 @@ function mathProblem() {
 function botMenu(p) {
   lionSay(`${p.name}아! 라이언이랑 뭐 하고 놀까? 🦁\n① 끝말잇기 ② 수학 문제 ③ 국기 퀴즈 ④ 말장난 ⑤ 나라 상식\n그냥 “끝말잇기!”라고 말하면 바로 시작해!`);
 }
+
+// ============ 라이언 AI 챗봇 (Google Gemini 무료 티어) ============
+const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const AI_EVERYTHING = (process.env.AI_EVERYTHING || '') === '1'; // 1이면 모든 대화에 AI가 응답
+const LION_SYSTEM_PROMPT = [
+  '너는 5~7살 한국 어린이 "우진"이를 위한 마스코트 캐릭터 "라이언"(노란 사자)이야.',
+  '우진이와 그 가족들이 함께 보는 가족 채팅방에 있어. 반말로 친근하게.',
+  '말투: 따뜻하고 귀엽게, 이모지 가끔. 문장은 짧게 (1~2문장, 한 번 답에 2문장 이내).',
+  '아이 눈높이: 어려운 단어는 쉬운 말로. 관심사(나라·국기, 수학, 끝말잇기, 농담·말장난)와 자연스럽게 연결해.',
+  '절대 금지: 욕설, 폭력, 무섭거나 불안한 내용, 성적 내용, 개인정보 요구, 위험한 행동 권유, 상업적인 조언.',
+  '모르면 솔직하게: "그건 아직 잘 몰라… 같이 찾아볼까?" 식으로.',
+  '우진이는 어린이라서, 답은 항상 안전하고 긍정적이어야 해.',
+].join('\n');
+const lastAi = new Map();   // 사용자 id -> 마지막 AI 호출 시각
+
+function aiEnabled() { return !!GEMINI_KEY; }
+
+async function askLion(p, text, recent) {
+  const ctx = recent.slice(-5).map(x => `${x.name}${x.lion ? '(라이언)' : ''}: ${x.text}`).join('\n') || '아직 대화가 없어요.';
+  const userMsg = `[지금까지 대화]\n${ctx}\n\n[방금 "${p.name}"이/가 말했어]\n${text}`;
+  const body = {
+    systemInstruction: { parts: [{ text: LION_SYSTEM_PROMPT }] },
+    contents: [{ role: 'user', parts: [{ text: userMsg }] }],
+    generationConfig: { temperature: 0.9, maxOutputTokens: 220, topP: 0.95 },
+  };
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`;
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 20000);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: ac.signal,
+    });
+    if (!res.ok) {
+      const e = await res.text().catch(() => '');
+      console.error('[라이언 AI] API 오류', res.status, String(e).slice(0, 160));
+      return { text: null, code: res.status };
+    }
+    const data = await res.json();
+    const out = (data?.candidates?.[0]?.content?.parts || []).map(x => x.text || '').join('') || '';
+    return { text: out.trim().slice(0, 300), code: 200 };
+  } catch (err) {
+    console.error('[라이언 AI] 요청 실패', String(err.message || err).slice(0, 120));
+    return { text: null, code: -1 };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+const aiBudget = { calls: [], last: 0 };   // 방 전체 AI 호출 예산 (무료 티어 보호)
+function llmChat(p, text, recent) {
+  const now = Date.now();
+  const last = lastAi.get(p.id) || 0;
+  if (now - last < 2500) return;                        // 같은 사람 2.5초마다 1회 (조용히 건너뜀)
+  aiBudget.calls = aiBudget.calls.filter(t => now - t < 60000);
+  if (aiBudget.calls.length >= 5) return;               // 방 전체 1분에 5회 한도 (요금 폭주 방지)
+  lastAi.set(p.id, now);
+  aiBudget.calls.push(now);
+  lionSay('라이언 생각하는 중… 🤔');
+  askLion(p, text, recent).then(r => {
+    if (r.text) lionSay(censor(r.text).slice(0, 300));
+    else lionSay('아차, 방금 말이 잘 안 들렸어… 다음에 다시 물어봐줘! (또는 끝말잇기 하자 🎮)');
+  });
+}
 function maybeBot(ws, p, rawText) {
   const t = rawText.replace(/\s+/g, ' ').trim();
   if (!t) return;
@@ -280,6 +346,10 @@ function maybeBot(ws, p, rawText) {
   }
   if (/고마워|사랑해|최고/.test(t)) {
     lionSay(`나도 ${p.name}이(가) 제일 좋아! 🧡🦁 너는 우리 가족의 자랑이야!`);
+    return;
+  }
+  if (aiEnabled() && (AI_EVERYTHING || mentions || (t.length <= 40 && /이야기|대화|얘기|물어봐|궁금해|질문|왜 |어떻게|무엇|뭐야|알려줘|설명/.test(t)))) {
+    llmChat(p, t, messages.slice(-6));
     return;
   }
   if (/놀자|뭐 하|같이/.test(t) || mentions) {
@@ -486,6 +556,13 @@ wss.on('connection', (ws) => {
         lionSay(`오늘의 나라 ${f.f} ${f.n}! 수도는 ${f.c}야. ${f.x}`);
       } else if (obj.kind === 'pun') {
         lionSay(randPick(LION.pun));
+      } else if (obj.kind === 'chat' || obj.kind === 'hello') {
+        if (aiEnabled()) {
+          lastAi.set(p.id, 0);
+          llmChat(p, randPick(['안녕, 라이언! 오늘 뭐 하고 놀까?', '라이언, 오늘 기분 어때? 나랑 이야기하자!']), messages.slice(-6));
+        } else {
+          botMenu(p);
+        }
       } else {
         botMenu(p);
       }
@@ -562,6 +639,7 @@ setInterval(() => {
 wss.on('connection', (ws) => { ws.on('pong', () => { ws.isAlive = true; }); });
 
 server.listen(PORT, () => {
-  console.log(`또박톡 서버 실행 중 → http://localhost:${PORT}`);
+  console.log(`우진이 톡 서버 실행 중 → http://localhost:${PORT}`);
   console.log(`부모 모드 PIN: ${PARENT_PIN} (환경변수 PARENT_PIN으로 변경 가능)`);
+  console.log(`라이언 AI 챗봇: ${aiEnabled() ? 'ON (' + GEMINI_MODEL + ')' : 'OFF — GEMINI_API_KEY 미설정이라 규칙 기반 봇으로 동작'} `);
 });
